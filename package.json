@@ -1,0 +1,26 @@
+{
+  "name": "demo",
+  "version": "0.0.1",
+  "description": "A visual demo to explore the features of CivicGraph",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify js/exports.js -o js/dist/bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CivicGraph/demo.git"
+  },
+  "author": "Aditya Mukhopadhyay <webmaster@adityamukho.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CivicGraph/demo/issues"
+  },
+  "homepage": "https://github.com/CivicGraph/demo#readme",
+  "dependencies": {
+    "jiff": "^0.7.3"
+  },
+  "devDependencies": {
+    "browserify": "^16.5.0"
+  }
+}
