@@ -3,6 +3,8 @@ TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjEuNTY5Mzk5Mzk4MTM5NzQ1ZS
 
 (function ($) {
   $.when('ready').then(() => {
+    window.feather.replace()
+
     const cy = window.cy = cytoscape({
       container: $('#cy'), // container to render in
 
@@ -17,6 +19,12 @@ TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjEuNTY5Mzk5Mzk4MTM5NzQ1ZS
           }
         },
         {
+          selector: 'node:selected',
+          style   : {
+            'background-color': '#007bff'
+          }
+        },
+        {
           selector: 'edge',
           style   : {
             'width'             : 2,
@@ -27,6 +35,13 @@ TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjEuNTY5Mzk5Mzk4MTM5NzQ1ZS
             'curve-style'       : 'straight',
             'target-arrow-color': '#ccc',
             'target-arrow-shape': 'vee'
+          }
+        },
+        {
+          selector: 'edge:selected',
+          style   : {
+            'line-color'        : '#007bff',
+            'target-arrow-color': '#007bff'
           }
         }
       ],
@@ -156,21 +171,82 @@ function draw (randomize = false) {
   layout.run()
 }
 
+function escapeHtml (unsafe) {
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
 function initBindings () {
   $('#reset').click(reset)
   $('#redraw').click(draw)
-  $(window).resize(() => setTimeout(draw, 100))
+  // $(window).resize(() => setTimeout(draw, 100))
+
+  cy.on('resize', draw)
+  cy.on('select', (event) => {
+    const el = event.target
+    console.log(el.data())
+    const idCss = el.id().replace(/\//g, '_')
+
+    const popper = el.popper({
+      content: () => {
+        const data = el.data()
+        const content = escapeHtml(JSON.stringify(data, null, 2))
+        const div = $(`
+          <div id="${idCss}" class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title">Label: ${data.label}</h5>
+              <h6 class="card-subtitle mb-2 text-muted">Group: ${el.group()}</h6>
+              <p class="card-text"><pre><code>${content}</code></pre></p>
+              <a href="#" class="card-link btn btn-primary" data-op="edit"><i data-feather="edit"></i> Edit</a>
+              <a href="#" class="card-link btn btn-danger" data-op="delete"><i data-feather="trash-2"></i> Delete</a>
+            </div>
+          </div>
+        `)
+
+        $('body').append(div)
+        window.feather.replace()
+
+        $(`#${idCss} a.card-link`).click(e => {
+          e.preventDefault()
+          const op = $(e.target).attr('data-op')
+          switch (op) {
+            case 'edit':
+              break
+            case 'delete':
+              if (el.isNode() && el.connectedEdges().size()) {
+                alert('This node has connected edges. Delete them first.')
+              } else if (confirm('Are you sure you want to delete this element?')) {
+                const collection = el.id().split('/')[0]
+                remove(collection, data).then(show)
+              }
+          }
+        })
+
+        return div
+      }
+    })
+
+    const update = () => popper.scheduleUpdate()
+    const destroy = () => {
+      popper.destroy()
+      $(`#${idCss}`).remove()
+    }
+
+    el.on('position', update)
+    el.on('remove unselect', destroy)
+    cy.on('pan zoom resize', update)
+  })
 }
 
 function reset (doConfirm = true) {
   const confirmed = !doConfirm || confirm('Are you sure? You will lose all your changes!')
 
   if (confirmed) {
-    initData().then(show).then(cg2cy).then(data => {
-      cy.elements().remove()
-      cy.add(data)
-      draw(true)
-    })
+    initData().then(show)
   }
 }
 
@@ -295,11 +371,30 @@ function insert (collection, data) {
   })
 }
 
+function remove (collection, data) {
+  const url = [BASE_URL, 'document', collection].join('/')
+
+  return $.ajax({
+    url,
+    method     : 'DELETE',
+    contentType: 'application/json',
+    headers    : {
+      accepts       : 'application/json',
+      Authorization : `bearer ${TOKEN}`,
+      'X-Session-Id': SESSION_ID
+    },
+    data       : JSON.stringify(data)
+  }).then(data => {
+    console.log(data)
+    return data
+  })
+}
+
 function show () {
   const path = `/ng/*/${window.SESSION_ID}_*`
   const url = [BASE_URL, 'event', 'show'].join('/')
 
-  return $.ajax({
+  $.ajax({
     url,
     headers: {
       accepts       : 'application/json',
@@ -313,5 +408,9 @@ function show () {
   }).then(data => {
     console.log(data)
     return data
+  }).then(cg2cy).then(data => {
+    cy.elements().remove()
+    cy.add(data)
+    draw(true)
   })
 }
