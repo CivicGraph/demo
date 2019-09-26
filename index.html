@@ -34,7 +34,7 @@
 <body>
 <div class="container-fluid">
     <div class="row">
-        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+        <div class="col-md-2 d-md-block bg-light sidebar">
             <div class="sidebar-sticky">
                 <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                     <span>Edit</span>
@@ -57,15 +57,14 @@
                     Form
                 </a>
             </div>
-        </nav>
-
-        <main class="col-md-9 ml-sm-auto col-lg-10 px-4" role="main">
+        </div>
+        <main class="col-md-10 ml-sm-auto col-lg-10 px-4" role="main">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">CivicGraph Demo</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group mr-2">
-                        <button class="btn btn-sm btn-danger" type="button">Reset</button>
-                        <button class="btn btn-sm btn-light" type="button">Redraw</button>
+                        <button class="btn btn-sm btn-danger" id="reset" type="button">Reset</button>
+                        <button class="btn btn-sm btn-light" id="redraw" type="button">Redraw</button>
                     </div>
                     <button class="btn btn-sm dropdown-toggle btn-light" type="button">
                         <span data-feather="calendar"></span>
@@ -74,7 +73,9 @@
                 </div>
             </div>
 
-            <div class="my-4 w-100" id="cy"></div>
+            <div class="border border-secondary rounded w-100" id="cy-container">
+                <div class="m-1" id="cy"></div>
+            </div>
         </main>
     </div>
 </div>
@@ -82,14 +83,8 @@
 <script src="/js/vendor/modernizr-3.7.1.min.js"></script>
 <script src="/js/dist/bundle.js"></script>
 <script crossorigin="anonymous"
-        integrity="sha256-t4pGbkN5tCx6bEPszPtzhE9QH8tjBgKpyB33H5W+9SQ="
-        src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.10.1/cytoscape.min.js"></script>
-<script crossorigin="anonymous"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
         src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script crossorigin="anonymous"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script crossorigin="anonymous"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>

@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/CivicGraph/demo#readme",
   "dependencies": {
+    "cytoscape": "^3.10.1",
+    "cytoscape-popper": "^1.0.4",
     "jiff": "^0.7.3"
   },
   "devDependencies": {
