@@ -32,7 +32,7 @@ TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjEuNTY5Mzk5Mzk4MTM5NzQ1ZS
             'label'             : 'data(label)',
             'text-rotation'     : 'autorotate',
             'text-margin-y'     : '-10px',
-            'curve-style'       : 'straight',
+            'curve-style'       : 'bezier',
             'target-arrow-color': '#ccc',
             'target-arrow-shape': 'vee'
           }
@@ -221,7 +221,7 @@ function initBindings () {
                 alert('This node has connected edges. Delete them first.')
               } else if (confirm('Are you sure you want to delete this element?')) {
                 const collection = el.id().split('/')[0]
-                remove(collection, data).then(show)
+                remove(collection, data).then(cy.remove(el))
               }
           }
         })
@@ -246,7 +246,7 @@ function reset (doConfirm = true) {
   const confirmed = !doConfirm || confirm('Are you sure? You will lose all your changes!')
 
   if (confirmed) {
-    initData().then(show)
+    initData().then(() => show())
   }
 }
 
@@ -308,6 +308,18 @@ function initData () {
         b: 10
       },
       arr  : [13, 14, 15]
+    },
+    {
+      _key : `${SESSION_ID}_e3`,
+      _from: `evstore_test_vertex/${vertices[2]._key}`,
+      _to  : `evstore_test_vertex/${vertices[0]._key}`,
+      num  : 6,
+      label: 'e3',
+      obj  : {
+        a: 11,
+        b: 12
+      },
+      arr  : [16, 17, 18]
     }
   ]
 
@@ -390,8 +402,8 @@ function remove (collection, data) {
   })
 }
 
-function show () {
-  const path = `/ng/*/${window.SESSION_ID}_*`
+function show (path) {
+  path = path || `/ng/*/${window.SESSION_ID}_*`
   const url = [BASE_URL, 'event', 'show'].join('/')
 
   $.ajax({
