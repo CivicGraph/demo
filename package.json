@@ -18,12 +18,12 @@
   },
   "homepage": "https://github.com/CivicGraph/demo#readme",
   "dependencies": {
-    "cytoscape": "^3.10.1",
-    "cytoscape-popper": "^1.0.4",
-    "jiff": "^0.7.3",
-    "modernizr": "^3.7.1"
+    "arangojs": "^6.13.0",
+    "axios": "^0.19.2",
+    "chalk": "^3.0.0",
+    "dotenv": "^8.2.0",
+    "dotenv-expand": "^5.1.0",
+    "lodash": "^4.17.15"
   },
-  "devDependencies": {
-    "browserify": "^16.5.0"
-  }
+  "devDependencies": {}
 }
